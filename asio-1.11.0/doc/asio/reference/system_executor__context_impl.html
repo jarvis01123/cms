@@ -1,0 +1,304 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>system_executor::context_impl</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="../../index.html" title="Asio">
+<link rel="up" href="../reference.html" title="Reference">
+<link rel="prev" href="system_executor/post.html" title="system_executor::post">
+<link rel="next" href="system_executor__context_impl/add_service.html" title="system_executor::context_impl::add_service">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="asio C++ library" width="250" height="60" src="../../asio.png"></td></tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="system_executor/post.html"><img src="../../prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../home.png" alt="Home"></a><a accesskey="n" href="system_executor__context_impl/add_service.html"><img src="../../next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="asio.reference.system_executor__context_impl"></a><a class="link" href="system_executor__context_impl.html" title="system_executor::context_impl">system_executor::context_impl</a>
+</h3></div></div></div>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">context_impl</span> <span class="special">:</span>
+  <span class="keyword">public</span> <span class="identifier">execution_context</span>
+</pre>
+<h5>
+<a name="asio.reference.system_executor__context_impl.h0"></a>
+        <span><a name="asio.reference.system_executor__context_impl.types"></a></span><a class="link" href="system_executor__context_impl.html#asio.reference.system_executor__context_impl.types">Types</a>
+      </h5>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Name
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody><tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/fork_event.html" title="system_executor::context_impl::fork_event"><span class="bold"><strong>fork_event</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Fork-related event notifications.
+                </p>
+              </td>
+</tr></tbody>
+</table></div>
+<h5>
+<a name="asio.reference.system_executor__context_impl.h1"></a>
+        <span><a name="asio.reference.system_executor__context_impl.member_functions"></a></span><a class="link" href="system_executor__context_impl.html#asio.reference.system_executor__context_impl.member_functions">Member
+        Functions</a>
+      </h5>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Name
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/context_impl.html" title="system_executor::context_impl::context_impl"><span class="bold"><strong>context_impl</strong></span></a>
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/notify_fork.html" title="system_executor::context_impl::notify_fork"><span class="bold"><strong>notify_fork</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Notify the execution_context of a fork-related event.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/_context_impl.html" title="system_executor::context_impl::~context_impl"><span class="bold"><strong>~context_impl</strong></span></a>
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+</tbody>
+</table></div>
+<h5>
+<a name="asio.reference.system_executor__context_impl.h2"></a>
+        <span><a name="asio.reference.system_executor__context_impl.protected_member_functions"></a></span><a class="link" href="system_executor__context_impl.html#asio.reference.system_executor__context_impl.protected_member_functions">Protected
+        Member Functions</a>
+      </h5>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Name
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/destroy_context.html" title="system_executor::context_impl::destroy_context"><span class="bold"><strong>destroy_context</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Destroys all services in the context.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/shutdown_context.html" title="system_executor::context_impl::shutdown_context"><span class="bold"><strong>shutdown_context</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Shuts down all services in the context.
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+<h5>
+<a name="asio.reference.system_executor__context_impl.h3"></a>
+        <span><a name="asio.reference.system_executor__context_impl.data_members"></a></span><a class="link" href="system_executor__context_impl.html#asio.reference.system_executor__context_impl.data_members">Data
+        Members</a>
+      </h5>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Name
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/scheduler_.html" title="system_executor::context_impl::scheduler_"><span class="bold"><strong>scheduler_</strong></span></a>
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/threads_.html" title="system_executor::context_impl::threads_"><span class="bold"><strong>threads_</strong></span></a>
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+</tbody>
+</table></div>
+<h5>
+<a name="asio.reference.system_executor__context_impl.h4"></a>
+        <span><a name="asio.reference.system_executor__context_impl.friends"></a></span><a class="link" href="system_executor__context_impl.html#asio.reference.system_executor__context_impl.friends">Friends</a>
+      </h5>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Name
+                </p>
+              </th>
+<th>
+                <p>
+                  Description
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/add_service.html" title="system_executor::context_impl::add_service"><span class="bold"><strong>add_service</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  (Deprecated: Use make_service().) Add a service object to the execution_context.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/has_service.html" title="system_executor::context_impl::has_service"><span class="bold"><strong>has_service</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Determine if an execution_context contains a specified service
+                  type.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/make_service.html" title="system_executor::context_impl::make_service"><span class="bold"><strong>make_service</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Creates a service object and adds it to the execution_context.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <a class="link" href="system_executor__context_impl/use_service.html" title="system_executor::context_impl::use_service"><span class="bold"><strong>use_service</strong></span></a>
+                </p>
+              </td>
+<td>
+                <p>
+                  Obtain the service object corresponding to the given type.
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+<h5>
+<a name="asio.reference.system_executor__context_impl.h5"></a>
+        <span><a name="asio.reference.system_executor__context_impl.requirements"></a></span><a class="link" href="system_executor__context_impl.html#asio.reference.system_executor__context_impl.requirements">Requirements</a>
+      </h5>
+<p>
+        <span class="emphasis"><em>Header: </em></span><code class="literal">asio/system_executor.hpp</code>
+      </p>
+<p>
+        <span class="emphasis"><em>Convenience header: </em></span><code class="literal">asio.hpp</code>
+      </p>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2003-2015 Christopher M.
+      Kohlhoff<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="system_executor/post.html"><img src="../../prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../home.png" alt="Home"></a><a accesskey="n" href="system_executor__context_impl/add_service.html"><img src="../../next.png" alt="Next"></a>
+</div>
+</body>
+</html>
