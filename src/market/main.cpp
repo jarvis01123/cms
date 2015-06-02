@@ -32,16 +32,17 @@ int main(int argc, char const *argv[]) {
 
     std::vector<std::thread> threadPool;
 
-    for(size_t t = 0; t < std::thread::hardware_concurrency(); t++){
-        threadPool.push_back(thread([&] { io_service.run();  } ));
-    }
+    // for(size_t t = 0; t < /*std::thread::hardware_concurrency()*/; t++){
+    //     threadPool.push_back(thread([&] { io_service.run();  } ));
+    // }
 
-    io_service.run();
+    io_service.start(); 
 
     io_service.stop();
     for(std::thread& t : threadPool) {
         t.join();
     }
+
     // while (getline(std::cin, message)) {
     //
     //     if (message.length() > my::MAX) {

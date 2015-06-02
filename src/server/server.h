@@ -64,15 +64,22 @@ namespace servers {
             return pointer(new async_connection(io_service));
         }
 
-        void start() { }
+        void respond(std::string response) {
+
+            asio::async_write(_socket, asio::buffer(response),
+                bind(&async_connection::handle_write, shared_from_this(),
+                std::placeholders::_1,
+                std::placeholders::_2));
+        }
+
+
     private:
 
-
+        void handle_write(const asio::error_code& /*error*/,
+            size_t /*bytes_transferred*/) { }
 
         async_connection(asio::io_service& io_service)
             : _socket(io_service) { }
-
-
 
         tcp::socket _socket;
     };
@@ -99,12 +106,19 @@ namespace servers {
         void handle_accept(async_connection::pointer new_connection,
           const asio::error_code& error) {
 
+            stringstream ss("Hello there");
+
+            ss << " " << std::this_thread::get_id();
+
+            cout << std::this_thread::get_id() << endl;
+            
             if (!error) {
-                new_connection->start();
+                new_connection->respond(ss.str());
             }
 
             accept();
         }
+
         tcp::acceptor _acceptor;
     };
 
