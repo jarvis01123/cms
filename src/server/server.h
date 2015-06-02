@@ -17,6 +17,7 @@ using asio::ip::tcp;
 namespace servers {
 
     const size_t MAX_BUF = 256;
+    int num_connections = 0;
 
     class connection {
 
@@ -79,7 +80,7 @@ namespace servers {
             size_t /*bytes_transferred*/) { }
 
         async_connection(asio::io_service& io_service)
-            : _socket(io_service) { }
+            : _socket(io_service) { servers::num_connections++; }
 
         tcp::socket _socket;
     };
@@ -106,17 +107,23 @@ namespace servers {
         void handle_accept(async_connection::pointer new_connection,
           const asio::error_code& error) {
 
-            stringstream ss("Hello there");
-
-            ss << " " << std::this_thread::get_id();
-
-            cout << std::this_thread::get_id() << endl;
+            accept();
+            stringstream ss;
+            cout << "num connections = " << servers::num_connections << " ..\n";
+            std::this_thread::sleep_for (std::chrono::seconds(2));
+            ss << " " << std::this_thread::get_id() << endl;
             
+            cout << std::this_thread::get_id() << endl;
+
             if (!error) {
                 new_connection->respond(ss.str());
             }
 
-            accept();
+            servers::num_connections--;
+            if (servers::num_connections <= 1) {
+                cout << "done" << endl;
+                _acceptor.get_executor().context().stop();
+            }
         }
 
         tcp::acceptor _acceptor;
