@@ -39,9 +39,9 @@ int main(int argc, char const *argv[]) {
         std::this_thread::sleep_for (std::chrono::seconds(3));
 
 
-        // asio::write(socket, asio::buffer(message), ignored_error);
-        //
-        //
+        asio::write(socket, asio::buffer(message), ignored_error);
+
+
         asio::error_code error;
         //
         size_t len = socket.read_some(asio::buffer(buf), error);
