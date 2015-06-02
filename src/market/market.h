@@ -258,7 +258,6 @@ namespace trading {
 
             stringstream message;
 
-            int order_no = 0;
             int order_id, order_amount;
 
             if ((command.size() % 2) != 0) {
@@ -285,6 +284,7 @@ namespace trading {
 
                         if (new_amt == 0) {
                             message << filled_msg(order_id) << endl;
+                            close_order(order_id);
                         }
 
                     } else {
@@ -325,18 +325,13 @@ namespace trading {
             auto order = get_order(order_id);
             int new_amount = order.amount + amount;
 
-            if (new_amount == 0) {
-                close_order(order_id);
-            } else {
 
-                orders[order_id].amount += amount;
-                auto comms = &commodities[order.commodity];
+            orders[order_id].amount += amount;
+            auto comms = &commodities[order.commodity];
 
-                auto it = find(comms->begin(), comms->end(), order);
+            auto it = find(comms->begin(), comms->end(), order);
 
-                it->amount += amount;
-
-            }
+            it->amount += amount;
 
             return new_amount;
         }

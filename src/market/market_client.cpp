@@ -7,6 +7,10 @@
 #include <functional>
 #include "market.h"
 #include <asio.hpp>
+#include <thread>
+#include <chrono>
+
+
 
 using asio::ip::tcp;
 
@@ -32,14 +36,16 @@ int main(int argc, char const *argv[]) {
     while( getline(std::cin, message) ) {
         tcp::socket socket(io_service);
         asio::connect(socket, endpoint_iterator);
-        
-        asio::write(socket, asio::buffer(message), ignored_error);
+        std::this_thread::sleep_for (std::chrono::seconds(3));
 
 
+        // asio::write(socket, asio::buffer(message), ignored_error);
+        //
+        //
         asio::error_code error;
-
+        //
         size_t len = socket.read_some(asio::buffer(buf), error);
-
+        socket.close();
         cout << string(buf.data(), len) << endl;;
     }
 
