@@ -19,7 +19,7 @@ int main(int argc, char const *argv[]) {
 
 
     trading::market market;
-    trading::order test;
+
     std::string message;
     std::string output;
 
@@ -28,20 +28,6 @@ int main(int argc, char const *argv[]) {
     asio::io_service::work work(io_service);
     int port_no = 2000;
 
-    market_server ms(io_service, port_no);
-
-    std::vector<std::thread> threadPool;
-
-    // for(size_t t = 0; t < /*std::thread::hardware_concurrency()*/; t++){
-    //     threadPool.push_back(thread([&] { io_service.run();  } ));
-    // }
-
-    io_service.start(); 
-
-    io_service.stop();
-    for(std::thread& t : threadPool) {
-        t.join();
-    }
 
     // while (getline(std::cin, message)) {
     //

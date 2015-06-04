@@ -29,14 +29,21 @@ int main(int argc, char const *argv[]) {
 
 
 
-    array<char, 128> buf;
+    std::array<char, 128> buf;
     std::string message;
     asio::error_code ignored_error;
 
+    tcp::socket socket(io_service);
+    asio::connect(socket, endpoint_iterator);
+
     while( getline(std::cin, message) ) {
-        tcp::socket socket(io_service);
-        asio::connect(socket, endpoint_iterator);
-        std::this_thread::sleep_for (std::chrono::seconds(3));
+
+        if (message == "close") {
+            socket.close();
+            exit(0);
+        }
+
+        // std::this_thread::sleep_for(std::chrono::seconds(3));
 
 
         asio::write(socket, asio::buffer(message), ignored_error);
@@ -45,8 +52,8 @@ int main(int argc, char const *argv[]) {
         asio::error_code error;
         //
         size_t len = socket.read_some(asio::buffer(buf), error);
-        socket.close();
-        cout << string(buf.data(), len) << endl;;
+
+        std::cout << std::string(buf.data(), len) << std::endl;
     }
 
 

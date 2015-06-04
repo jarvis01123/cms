@@ -10,6 +10,8 @@
 #include <thread>
 #include <chrono>
 #include <future>
+#include "async_server.h"
+#include "../market/market.h"
 
 //#define TEST_SINGLE
 
@@ -37,15 +39,16 @@ int main(int argc, char const *argv[]) {
 
     asio::io_service io_service;
 
-    servers::async_server async_server(io_service, 2000);
+    trading::market market;
+    servers::server_pointer market_server = servers::async_server::create(io_service, 2000, market);
 
-    async_server.accept();
+
+    market_server->accept();
 
     std::vector<std::thread> threadPool;
 
     for(size_t t = 0; t < std::thread::hardware_concurrency(); t++){
-        threadPool.push_back(thread([&] {
-            cout << "thread " << std::this_thread::get_id() << " starting" << endl;;
+        threadPool.push_back(std::thread([&] {
 
             io_service.run();  } ));
     }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -5,7 +7,6 @@
 #include <map>
 #include <sstream>
 #include <functional>
-#include "../market/market.h"
 #include <asio.hpp>
 #include <thread>
 #include <chrono>
@@ -16,8 +17,7 @@ using asio::ip::tcp;
 
 namespace servers {
 
-    const size_t MAX_BUF = 256;
-    int num_connections = 0;
+
 
     class connection {
 
@@ -36,7 +36,7 @@ namespace servers {
 
             size_t len = _socket.read_some(asio::buffer(_buffer), error);
 
-            return string(_buffer.data(), len);
+            return std::string(_buffer.data(), len);
         }
 
         void respond(std::string response) {
@@ -50,83 +50,8 @@ namespace servers {
         tcp::socket _socket;
         tcp::acceptor _acceptor;
 
-        array<char, servers::MAX_BUF> _buffer;
+        std::array<char, 256> _buffer;
 
-    };
-
-    class async_connection : public enable_shared_from_this<async_connection> {
-
-    public:
-        typedef shared_ptr<async_connection> pointer;
-
-        tcp::socket& socket() { return _socket; }
-
-        static pointer create(asio::io_service& io_service) {
-            return pointer(new async_connection(io_service));
-        }
-
-        void respond(std::string response) {
-
-            asio::async_write(_socket, asio::buffer(response),
-                bind(&async_connection::handle_write, shared_from_this(),
-                std::placeholders::_1,
-                std::placeholders::_2));
-        }
-
-
-    private:
-
-        void handle_write(const asio::error_code& /*error*/,
-            size_t /*bytes_transferred*/) { }
-
-        async_connection(asio::io_service& io_service)
-            : _socket(io_service) { servers::num_connections++; }
-
-        tcp::socket _socket;
-    };
-
-    class async_server {
-
-    public:
-
-        async_server(asio::io_service& io_service, size_t port_no)
-            : _acceptor(io_service, tcp::endpoint(tcp::v4(), port_no)) { }
-
-        void accept() {
-
-            async_connection::pointer new_connection =
-              async_connection::create(_acceptor.get_executor().context());
-
-            _acceptor.async_accept(new_connection->socket(),
-                bind(&async_server::handle_accept, this, new_connection,
-                  std::placeholders::_1));
-        }
-
-    private:
-
-        void handle_accept(async_connection::pointer new_connection,
-          const asio::error_code& error) {
-
-            accept();
-            stringstream ss;
-            cout << "num connections = " << servers::num_connections << " ..\n";
-            std::this_thread::sleep_for (std::chrono::seconds(2));
-            ss << " " << std::this_thread::get_id() << endl;
-            
-            cout << std::this_thread::get_id() << endl;
-
-            if (!error) {
-                new_connection->respond(ss.str());
-            }
-
-            servers::num_connections--;
-            if (servers::num_connections <= 1) {
-                cout << "done" << endl;
-                _acceptor.get_executor().context().stop();
-            }
-        }
-
-        tcp::acceptor _acceptor;
     };
 
 };
