@@ -2,6 +2,8 @@
 #include "../misc/misc.h"
 
 trading::market::market(): _next_id{0} {
+
+    // register handlers
     _handlers.emplace( std::make_pair("POST", &trading::market::post) );
     _handlers.emplace( std::make_pair("LIST", &trading::market::list) );
     _handlers.emplace( std::make_pair("CHECK", &trading::market::check) );
@@ -22,10 +24,6 @@ std::string trading::market::execute(std::string message) {
     return (this->*x)(command);
 }
 
-std::vector<std::string> trading::market::get_commands() {
-    return COMMANDS;
-}
-
 std::pair<bool, std::string> trading::market::validate(std::vector<std::string> command) {
     std::pair<bool, std::string> tbr;
     tbr.first = true;
@@ -33,7 +31,6 @@ std::pair<bool, std::string> trading::market::validate(std::vector<std::string> 
 
     if (!(tbr.first = is_valid_dealer(command[0]))) {
         tbr.second = unknown_dealer_err_msg();
-
     } else if (!(tbr.first = is_valid_command(command[1]))) {
         tbr.second = invalid_err_msg();
     }
@@ -45,23 +42,52 @@ int trading::market::next_unique_id() {
     return ++_next_id;
 }
 
-
 // ############### methods ######################
 
 trading::order trading::market::get_order(int order_id) {
     return _orders[order_id];
 }
 
+std::pair<bool, int> trading::market::parse_int(std::string val) {
+
+    bool is_int = true;
+    for (auto x : val) {
+        if (!isdigit(x)) {
+            is_int = false;
+            break;
+        }
+    }
+
+    return std::make_pair(is_int, atoi(val.c_str()));
+}
+
+std::pair<bool, float> trading::market::parse_float(std::string val) {
+
+    // returns 0 if not a float. this is fine to test for, since 0 is a
+    char* end;
+    float tbr = strtof(val.c_str(), &end);
+
+    // strtof sets end to str in case of conversion failure
+    return std::make_pair(val.c_str() != end, tbr);
+}
+
 // “POST” side COMMODITY AMOUNT PRICE
 std::string trading::market::post(std::vector<std::string> command) {
+
+    if (command.size() != 6) return invalid_err_msg();
 
     order order;
     order.dealer_id = command[0];
     order.id = next_unique_id();
     order.side = trading::sideify(command[2]);
     order.commodity = command[3];
-    order.amount = (int)atoi(command[4].c_str());
-    order.price = stof(command[5]);
+    auto t1 = parse_int(command[4]);
+    auto t2 = parse_float(command[5]);
+
+    if (!t1.first || !t2.first) return invalid_err_msg();
+
+    order.amount = t1.second;
+    order.price = t2.second;
 
     add_order(order);
 
@@ -69,11 +95,6 @@ std::string trading::market::post(std::vector<std::string> command) {
 }
 
 void trading::market::add_order(trading::order order) {
-    static std::mutex mt;
-
-    // enforce mutual exclusive access to market modify
-    std::lock_guard<std::mutex> lk(mt);
-
     _orders[order.id] = order;
     _commodities[order.commodity].push_back(order);
 }
@@ -127,16 +148,20 @@ std::string trading::market::aggress(std::vector<std::string> command) {
 
     std::stringstream message;
 
-    int order_id, order_amount;
-
+    // b.c. aggress orders come in pairs
     if ((command.size() % 2) != 0) {
         return invalid_err_msg();
     }
 
     for (size_t i = 2; i < command.size(); i += 2) {
 
-        order_id = (int)atoi(command[i].c_str());
-        order_amount = (int)atoi(command[i + 1].c_str());
+        auto t1 = parse_int(command[i]);
+        auto t2 = parse_int(command[i + 1]);
+
+        if (!t1.first || !t2.first) return invalid_err_msg();
+
+        auto order_id = t1.second;
+        auto order_amount = t2.second;
 
         auto order = get_order(order_id);
 
@@ -148,7 +173,6 @@ std::string trading::market::aggress(std::vector<std::string> command) {
             if (order.amount >= order_amount) {
 
                 auto new_amt = adjust_amount(order_id, (-1)*order_amount);
-
                 message << trade_report(command[0], order, order_amount) << std::endl;
 
                 if (new_amt == 0) {
@@ -160,7 +184,6 @@ std::string trading::market::aggress(std::vector<std::string> command) {
                 message << unauthorized_err_msg() << std::endl;
             }
         }
-
     }
 
     return misc::strip_trailing_newline(message.str());
@@ -171,11 +194,11 @@ std::string trading::market::aggress(std::vector<std::string> command) {
 // “REVOKE” order_ID
 std::string trading::market::revoke(std::vector<std::string> command) {
 
-    auto order_id = (int)atoi(command[2].c_str());
+    auto order_id = parse_int(command[2].c_str());
+    if (!order_id.first) return invalid_err_msg();
 
-    close_order(order_id);
-
-    return revoke_msg(order_id);
+    close_order(order_id.second);
+    return revoke_msg(order_id.second);
 }
 
 void trading::market::close_order(int order_id) {
@@ -183,11 +206,6 @@ void trading::market::close_order(int order_id) {
     auto order = get_order(order_id);
     auto comms = &_commodities[order.commodity];
     auto it = find(comms->begin(), comms->end(), order);
-
-    static std::mutex mt;
-
-    // enforce mutual exclusive access to market write
-    std::lock_guard<std::mutex> lk(mt);
 
     _orders.erase(order_id);
     comms->erase(it);
@@ -201,11 +219,6 @@ int trading::market::adjust_amount(int order_id, int amount) {
     auto comms = &_commodities[order.commodity];
     auto it = find(comms->begin(), comms->end(), order);
 
-    static std::mutex mt;
-
-    // enforce mutual exclusive access to market write
-    std::lock_guard<std::mutex> lk(mt);
-
     _orders[order_id].amount += amount;
     it->amount += amount;
 
@@ -217,11 +230,10 @@ std::string trading::market::check(std::vector<std::string> command) {
     int order_id = (int)atoi(command[2].c_str());
     auto order = get_order(order_id);
     return order.info_str();
-
 }
 
 
-    // ### helper methods ###
+// ### helper methods ###
 
 bool trading::market::is_valid_dealer(std::string id) {
     return find(DEALER_IDS.begin(), DEALER_IDS.end(), id) != DEALER_IDS.end();

@@ -2,15 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
-#include <algorithm>
-#include <map>
-#include <sstream>
-#include <functional>
 #include <asio.hpp>
-#include <thread>
-#include <chrono>
-#include <future>
 #include "../market/market.h"
 #include "async_connection.h"
 
@@ -31,29 +23,37 @@ namespace servers {
 
     public:
 
+        // spawn new connection and wait for client
         void accept();
 
+        void start();
+        
+        void set_max_connections(int);
         trading::market& market();
         void notify_connect_closed();
         void notify_connect_open();
 
+        // return shared pointer to new server
         static server_pointer create(asio::io_service& io_service, size_t port_no,
             trading::market& market);
 
-
     private:
 
+        // private constructor, forces client to use create method
         async_server(asio::io_service& io_service,
             size_t port_no, trading::market& market);
 
+        // check to see if connections have closed, shuts down io_service
         void stop_if_idle();
+
+        // handler for accept
         void handle_accept(servers::pointer new_connection,
           const asio::error_code& error);
 
         tcp::acceptor _acceptor;
         int _num_connections;
+        int _MAX_CONNECTIONS;
         std::mutex _num_connects_mutex;
         trading::market& _market;
-        bool _DEBUG;
     };
 };

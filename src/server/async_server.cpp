@@ -4,8 +4,17 @@ servers::async_server::async_server(asio::io_service& io_service,
     size_t port_no, trading::market& market)
     : _acceptor(io_service, tcp::endpoint(tcp::v4(), port_no)),
       _num_connections{0},
-      _DEBUG{false},
+      _MAX_CONNECTIONS{1<<30}, // infinite connections default
       _market{market} { }
+
+void servers::async_server::set_max_connections(int num) {
+    _MAX_CONNECTIONS = num;
+}
+
+void servers::async_server::start() {
+    accept();
+    _acceptor.get_executor().context().run();
+}
 
 void servers::async_server::accept() {
 
@@ -40,12 +49,8 @@ void servers::async_server::notify_connect_open() {
 void servers::async_server::handle_accept(servers::pointer new_connection,
   const asio::error_code& error) {
 
-    // immediately accept incoming connections
-    accept();
-
-    if (_DEBUG) {
-        // put the thread to sleep to test concurrency, if debugging
-        // std::this_thread::sleep_for (std::chrono::seconds(2));
+    if (_num_connections < _MAX_CONNECTIONS) {
+        accept();
     }
 
     if (!error) {
@@ -59,6 +64,6 @@ trading::market& servers::async_server::market() {
 }
 
 servers::server_pointer servers::async_server::create(asio::io_service& io_service,
-    size_t port_no, trading::market& market) {
+        size_t port_no, trading::market& market) {
     return servers::server_pointer(new servers::async_server(io_service, port_no, market));
 }

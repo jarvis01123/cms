@@ -2,15 +2,8 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
-#include <algorithm>
 #include <map>
-#include <sstream>
-#include <functional>
 #include <asio.hpp>
-#include <thread>
-#include <chrono>
-#include <future>
 
 using asio::ip::tcp;
 
@@ -26,25 +19,25 @@ namespace servers {
     class async_connection : public std::enable_shared_from_this<async_connection> {
 
     public:
-        static servers::async_server async_server;
 
-        tcp::socket& socket();
-
+        // create shared pointer to a new connection
         static pointer create(asio::io_service& io_service,
             servers::server_pointer server_pointer);
 
-        void respond(std::string response);
         void read();
 
         // notify the server that this connection has closed
         ~async_connection();
+        tcp::socket& socket();
 
     private:
 
         void handle_write(const asio::error_code&, size_t len);
         void handle_read(const asio::error_code&, size_t len );
+        void respond(std::string response);
         std::string response(std::string);
-        // private constructor, force user to utilize create method
+
+        // force user to utilize create method, notify server of creation
         async_connection(asio::io_service& io_service, servers::server_pointer async_server);
 
         tcp::socket _socket;

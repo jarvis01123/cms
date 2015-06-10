@@ -40,25 +40,13 @@ int main(int argc, char const *argv[]) {
     asio::io_service io_service;
 
     trading::market market;
-    servers::server_pointer market_server = servers::async_server::create(io_service, 2000, market);
+    servers::server_pointer market_server = servers::async_server::create(
+        io_service, 2000, market);
 
-
+    market_server->set_max_connections(1); 
     market_server->accept();
 
-    std::vector<std::thread> threadPool;
-
-    for(size_t t = 0; t < std::thread::hardware_concurrency(); t++){
-        threadPool.push_back(std::thread([&] {
-
-            io_service.run();  } ));
-    }
-
     io_service.run();
-
-    io_service.stop();
-    for(std::thread& t : threadPool) {
-        t.join();
-    }
 
     return 0;
 }

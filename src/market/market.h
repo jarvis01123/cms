@@ -27,10 +27,8 @@ namespace trading {
 
             // execute a raw input std::string
             std::string execute(std::string message);
-            std::vector<std::string> get_commands();
 
     private:
-
 
         // core command functionality
         std::string post(std::vector<std::string> command);
@@ -52,6 +50,9 @@ namespace trading {
 
         // misc
         std::pair<bool, std::string> validate(std::vector<std::string> command);
+        std::pair<bool, int> parse_int(std::string val);
+        std::pair<bool, float> parse_float(std::string val); 
+
         int next_unique_id();
         trading::order get_order(int order_id);
 
