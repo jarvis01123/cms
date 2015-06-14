@@ -47,11 +47,11 @@ namespace trading {
         bool is_valid_dealer(std::string id);
         bool is_valid_commodity(std::string id);
         bool is_valid_command(std::string id);
-
+        bool is_known_order(int ord); 
         // misc
         std::pair<bool, std::string> validate(std::vector<std::string> command);
         std::pair<bool, int> parse_int(std::string val);
-        std::pair<bool, float> parse_float(std::string val); 
+        std::pair<bool, float> parse_float(std::string val);
 
         int next_unique_id();
         trading::order get_order(int order_id);

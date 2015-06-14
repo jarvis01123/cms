@@ -1,14 +1,3 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <map>
-#include <sstream>
-#include <functional>
-#include <asio.hpp>
-#include <thread>
-#include <chrono>
-#include <future>
 #include "async_connection.h"
 #include "async_server.h"
 
@@ -23,12 +12,8 @@ servers::pointer servers::async_connection::create(asio::io_service& io_service,
 std::string servers::async_connection::response(std::string call) {
     return _async_server->market().execute(call);
 }
-void servers::async_connection::respond(std::string call) {
 
-        // generate a response from the call made to server
-        auto res = response(call);
-
-        // write the response back to caller
+void servers::async_connection::respond(std::string res) {
         asio::async_write(_socket, asio::buffer(res),
             bind(&servers::async_connection::handle_write, shared_from_this(),
                 std::placeholders::_1,
@@ -48,15 +33,16 @@ void servers::async_connection::handle_write(const asio::error_code& /*error*/,
 void servers::async_connection::handle_read(const asio::error_code& error,
     size_t len /*bytes_transferred*/) {
 
-    if (error == asio::error::eof) {
-        // 
-    } else {
-        respond(std::string(_buffer.data(), len));
+    // test will fail when connection closed by client
+    if (error != asio::error::eof) {
+
+        // generate response to the message from client
+        auto res = response(std::string(_buffer.data(), len));
+        respond(res);
+
+        // read next instruction
         read();
     }
-
-    // initiate response to call made from client
-
 }
 
 servers::async_connection::async_connection(asio::io_service& io_service,
@@ -69,6 +55,7 @@ servers::async_connection::async_connection(asio::io_service& io_service,
 }
 
 servers::async_connection::~async_connection() {
+
     // notify parent server that connection has been destroyed
     _async_server->notify_connect_closed();
 }

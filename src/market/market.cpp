@@ -2,7 +2,6 @@
 #include "../misc/misc.h"
 
 trading::market::market(): _next_id{0} {
-
     // register handlers
     _handlers.emplace( std::make_pair("POST", &trading::market::post) );
     _handlers.emplace( std::make_pair("LIST", &trading::market::list) );
@@ -11,12 +10,9 @@ trading::market::market(): _next_id{0} {
     _handlers.emplace( std::make_pair("REVOKE", &trading::market::revoke) );
 }
 
-
-// execute a raw input std::string
 std::string trading::market::execute(std::string message) {
-    auto command = misc::split_on_white(message);
-
-    auto res = validate(command);
+    std::vector<std::string> command = misc::split_on_white(message);
+    std::pair<bool, std::string> res = validate(command);
 
     if (!res.first) return res.second;
 
@@ -81,8 +77,8 @@ std::string trading::market::post(std::vector<std::string> command) {
     order.id = next_unique_id();
     order.side = trading::sideify(command[2]);
     order.commodity = command[3];
-    auto t1 = parse_int(command[4]);
-    auto t2 = parse_float(command[5]);
+    std::pair<bool, int> t1 = parse_int(command[4]);
+    std::pair<bool, float> t2 = parse_float(command[5]);
 
     if (!t1.first || !t2.first) return invalid_err_msg();
 
@@ -105,7 +101,7 @@ std::string trading::market::list(std::vector<std::string> command) {
     std::string commodity = command[2];
 
     if (command.size() == 4) {
-        return list_for_dealer(commodity, command[0]);
+        return list_for_dealer(commodity, command[3]);
     }
 
     if (!is_valid_commodity(commodity)) {
@@ -139,8 +135,8 @@ std::string trading::market::list_for_dealer(std::string commodity, std::string 
         }
     }
 
-    return misc::strip_trailing_newline(message.str());
-
+    message << eol_msg();
+    return message.str();
 }
 
 // “AGGRESS” ( order_ID AMOUNT )+
@@ -155,21 +151,18 @@ std::string trading::market::aggress(std::vector<std::string> command) {
 
     for (size_t i = 2; i < command.size(); i += 2) {
 
-        auto t1 = parse_int(command[i]);
-        auto t2 = parse_int(command[i + 1]);
+        std::pair<bool, int> t1 = parse_int(command[i]);
+        std::pair<bool, int> t2 = parse_int(command[i + 1]);
 
         if (!t1.first || !t2.first) return invalid_err_msg();
 
         auto order_id = t1.second;
         auto order_amount = t2.second;
 
-        auto order = get_order(order_id);
-
-        if (order.id == 0) {
+        if (!is_known_order(order_id)) {
             message << unknown_ord_err_msg() << std::endl;
-
         } else {
-
+            auto order = get_order(order_id);
             if (order.amount >= order_amount) {
 
                 auto new_amt = adjust_amount(order_id, (-1)*order_amount);
@@ -196,6 +189,7 @@ std::string trading::market::revoke(std::vector<std::string> command) {
 
     auto order_id = parse_int(command[2].c_str());
     if (!order_id.first) return invalid_err_msg();
+    if (!is_known_order(order_id.second)) return unknown_ord_err_msg();
 
     close_order(order_id.second);
     return revoke_msg(order_id.second);
@@ -245,6 +239,11 @@ bool trading::market::is_valid_commodity(std::string id) {
 
 bool trading::market::is_valid_command(std::string id) {
     return find(COMMANDS.begin(), COMMANDS.end(), id) != COMMANDS.end();
+}
+
+bool trading::market::is_known_order(int order_id) {
+    auto it(_orders.lower_bound(order_id));
+    return (it != _orders.end());
 }
 
 inline std::string trading::market::unknown_comm_err_msg() { return "UNKNOWN_COMMODITY"; }
