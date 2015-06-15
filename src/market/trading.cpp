@@ -9,9 +9,9 @@ std::string trading::order::info_str() {
 
     message << id << " ";
     message << dealer_id << " ";
-    message << amount << " ";
     message << trading::stringify(side) << " ";
     message << commodity << " ";
+    message << amount << " ";
     message << price;
 
     return message.str();
@@ -19,13 +19,21 @@ std::string trading::order::info_str() {
 
 
 std::string trading::stringify(trading::side side) {
-    return side == trading::side::BUY ? "BUY" : "SELL";
+    if (side == trading::side::BUY) {
+        return "BUY";
+    } else if (side == trading::side::SELL) {
+        return "SELL";
+    } else {
+        return "ERROR";
+    }
 }
 
 trading::side trading::sideify(std::string s) {
     if (s == "BUY") {
         return trading::side::BUY;
-    } else {
+    } else if (s == "SELL") {
         return trading::side::SELL;
+    } else {
+        return trading::side::ERROR;
     }
 }

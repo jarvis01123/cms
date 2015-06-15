@@ -4,7 +4,7 @@
 tcp::socket& servers::async_connection::socket() { return _socket; }
 
 servers::pointer servers::async_connection::create(asio::io_service& io_service,
-                 servers::server_pointer server_pointer) {
+        servers::server_pointer server_pointer) {
 
     return servers::pointer(new servers::async_connection(io_service, server_pointer));
 }
@@ -40,15 +40,15 @@ void servers::async_connection::handle_read(const asio::error_code& error,
         auto res = response(std::string(_buffer.data(), len));
         respond(res);
 
-        // read next instruction
+        // read next message
         read();
     }
 }
 
 servers::async_connection::async_connection(asio::io_service& io_service,
-                                            servers::server_pointer async_server)
-    : _socket(io_service),
-      _async_server(async_server) {
+        servers::server_pointer async_server)
+            : _socket(io_service),
+              _async_server(async_server) {
 
     // notify parent server that connection has been created
     _async_server->notify_connect_open();

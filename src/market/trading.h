@@ -5,22 +5,34 @@
 #include <sstream>
 
 namespace trading {
+
+    typedef double money_type;
+    typedef int id_type;
+
     enum side {
         BUY,
-        SELL
+        SELL,
+        ERROR
     };
 
+    enum order_status {
+        STATUS_ERROR,
+        ACTIVE,
+        FILLED,
+        REVOKED
+    };
 
     std::string stringify(side side);
     trading::side sideify(std::string s);
 
     struct order {
         side side;
-        int id;
+        id_type id;
         std::string dealer_id;
         std::string commodity;
         int amount;
-        double price;
+        money_type price;
+        order_status status;
 
         bool operator==(const order& rhs) const;
 
@@ -60,6 +72,26 @@ namespace trading {
         "AGGRESS"
     };
 
+    namespace constants {
 
+        namespace positions {
+            const int DEALER = 0;
+            const int COMMAND = 1;
+            const int POST_SIDE = 2;
+            const int POST_COMMODITY = 3;
+            const int POST_AMOUNT = 4;
+            const int POST_PRICE = 5;
+            const int LIST_COMMODITY = 2;
+            const int LIST_DEALER = 3;
+            const int CHECK_ORDER = 2;
+            const int REVOKE_ORDER = 2;
+        };
+
+        const int EMPTY_ORDER = 0;
+        const int POST_NUM_ARGS = 6;
+        const int LIST_DEALER_NUM_ARGS = 4;
+        const int LIST_COMM_NUM_ARGS = 3;
+        const int LIST_NUM_ARGS = 2;
+    };
 
 };

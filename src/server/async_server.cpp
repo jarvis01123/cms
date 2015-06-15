@@ -19,7 +19,8 @@ void servers::async_server::start() {
 void servers::async_server::accept() {
 
     servers::pointer new_connection =
-      servers::async_connection::create(_acceptor.get_executor().context(), shared_from_this());
+      servers::async_connection::create(_acceptor.get_executor().context(),
+        shared_from_this());
 
     _acceptor.async_accept(new_connection->socket(),
         bind(&async_server::handle_accept, this, new_connection,

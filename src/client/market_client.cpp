@@ -20,8 +20,7 @@ int main(int argc, char const *argv[]) {
     asio::io_service io_service;
     tcp::resolver resolver(io_service);
 
-    // tcp::resolver::query query(argv[1], 2000);
-    tcp::resolver::query query(argv[1], "2000",
+    tcp::resolver::query query(argv[1], argv[2],
         asio::ip::resolver_query_base::numeric_service);
 
 
@@ -29,7 +28,7 @@ int main(int argc, char const *argv[]) {
 
 
 
-    std::array<char, 128> buf;
+    std::array<char, 256> buf;
     std::string message;
     asio::error_code ignored_error;
 
@@ -43,14 +42,10 @@ int main(int argc, char const *argv[]) {
             exit(0);
         }
 
-        // std::this_thread::sleep_for(std::chrono::seconds(3));
-
-
         asio::write(socket, asio::buffer(message), ignored_error);
 
 
         asio::error_code error;
-        //
         size_t len = socket.read_some(asio::buffer(buf), error);
 
         std::cout << std::string(buf.data(), len) << std::endl;
