@@ -9,7 +9,7 @@ Extensions: Both extensions were implemented.
 
 Build Instructions:
 
-A call to make from this directory will place the executable cms in ./bin/
+A call to make from this directory will place the executable cms in this directory
 The program can be invoked with one of 3 modes:
 
 1. ./cms base
