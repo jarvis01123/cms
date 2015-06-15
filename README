@@ -1,0 +1,94 @@
+Author: Travis McKee
+
+Project Title: Commodity Market System – CMS<GO>
+
+Description: A commodities trading server. Allows for mock trading of a few
+basic commodities over multiple TCP connections.
+
+Extensions: Both extensions were implemented.
+
+Build Instructions:
+
+A call to make from this directory will place the executable cms in ./bin/
+The program can be invoked with one of 3 modes:
+
+1. ./cms base
+2. ./cms ext1 <port no>
+3. ./cms ext2 <port no>
+
+Modes 2 and 3 require client interaction, and there is no stdout. A simple
+client is provided for testing. Note that the output from the market will be
+returned to the client, NOT posted on the server side. Ideally this should be
+logged on the server side, but is not as of yet.
+
+------------ Design overview: ----------------------------
+
+Libraries Used:
+
+For TCP connections I used the boost asio standalone library, without the rest
+of boost. The library can be found in the /lib folder.
+
+Market:
+I made a market class to handle the internal state of the market, and to generate
+appropriate output strings in response to the input commands.
+
+Private data structures:
+
+I decided to use a couple of maps to allow quick access to the
+data. The first is a (order_id -> order) map to allow O(logn) access to any given
+order's information. I felt that having this instant access was worth giving up
+the reasonable linear space required to keep a separate map for this.
+
+I also keep a map of (commodity -> list of orders) to allow for the same
+fast access to all orders of a given commodity. This allows all orders to be listed
+in a naive way, with no particular ordering. This is probably sub-optimal for a
+real world situation where you would want to filter on every possible attribute
+of an order, but it's sufficient for the problem at hand.
+
+The one aspect that is perhaps under-engineered is the simple linear filter
+for listing commodities for a given dealer_id. I decided not to give up the extra
+space and complexity to make this a faster operation, because it seemed like a
+secondary feature that wouldn't be used as much and could absorb the extra time
+complexity. This could be an error in judgement stemming from a
+lack of domain knowledge.
+
+Public methods:
+
+The only public method my market exposes is a (string -> string) execute method.
+It will parse a command string and redirect the command to the appropriate handler
+for that type of operation. I chose this because it makes it very easy to inject
+the market into the call and response model of the given task.
+
+Servers:
+
+I built async_server and async_connection classes to handle the TCP communication.
+Each connection will handle all communication with a given client, and continue
+reading and executing commands until the connection is killed by that client.
+Each connection is bound to the async_server that created it, which in turn is
+bound to a particular market. This allows the connection to access the market
+directly, and to notify the parent server of deconstruction, in order to keep a
+proper count of active connections.
+
+
+----------- Known Bugs ---------------------------
+
+1. There is no timeout for client communication. The server will wait forever
+for a given connection to communicate or close. This may or may not be appropriate.
+
+2. In ext1, if a second client attempts to connect he is not rejected, but rather
+is ignored. I use the same server for both extensions, and simple limit the
+maximum number of connections in that case to 1.
+
+3. Unique order IDs are limited to integer values and could overflow. No mechanism is
+in place to reuse outdated IDs.
+
+---------- Other --------------------------
+
+This program accepts concurrent connections asynchronously, but
+it deals with the commands synchronously on the server side. It would be
+easy to modify this program to draw from a thread pool, so that the commands
+can be executed in parallel. I tested this out briefly, but I didn't properly
+engineer it or test it in depth so that functionality is not in this version.
+
+To make parallel, just call market->start() from every thread in a pool and
+add mutual exclusion to avoid data races.
