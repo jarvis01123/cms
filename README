@@ -16,41 +16,32 @@ The program can be invoked with one of 3 modes:
 2. ./cms ext1 <port no>
 3. ./cms ext2 <port no>
 
-Modes 2 and 3 require client interaction, and there is no stdout. A simple
+Modes 2 and 3 require client interaction, and there is standard output. A simple
 client is provided for testing. Note that the output from the market will be
-returned to the client, not posted on the server side. Ideally this should be
-logged on the server side, but is not as of yet.
+returned to the client, not posted on the server side. This should probably be
+logged on the server side, but isn't.
 
 ------------ Design overview: ----------------------------
 
 Libraries Used:
 
-For TCP connections I used the boost asio standalone library, without the rest
-of boost. The library can be found in the /lib folder.
-
-Market:
-I made a market class to handle the internal state of the market, and to generate
-appropriate output strings in response to the input commands.
+For TCP connections I used the boost asio standalone library.
 
 Private data structures:
 
 I decided to use a couple of maps to allow quick access to the
 data. The first is a (order_id -> order) map to allow O(logn) access to any given
 order's information. I felt that having this instant access was worth giving up
-the reasonable linear space required to keep a separate map for this.
+the relatively modest space complexity.
 
 I also keep a map of (commodity -> list of orders) to allow for the same
 fast access to all orders of a given commodity. This allows all orders to be listed
-in a naive way, with no particular ordering. This is probably sub-optimal for a
-real world situation where you would want to filter on every possible attribute
-of an order, but it's sufficient for the problem at hand.
+in a naive way, with no particular ordering.
 
-The one aspect that is perhaps under-engineered is the simple linear filter
-for listing commodities for a given dealer_id. I decided not to give up the extra
-space and complexity to make this a faster operation, because it seemed like a
-secondary feature that wouldn't be used as much and could absorb the extra time
-complexity. This could be an error in judgement stemming from a
-lack of domain knowledge.
+The filter for listing commodities for a particular dealer is naive and linear.
+I decided not to give up the extra space and complexity to make this a
+faster operation, because it seemed like a secondary feature that wouldn't be
+used as much and could absorb the extra time complexity.
 
 Public methods:
 
@@ -90,5 +81,5 @@ easy to modify this program to draw from a thread pool, so that the commands
 can be executed in parallel. I tested this out briefly, but I didn't properly
 engineer it or test it in depth so that functionality is not in this version.
 
-To make parallel, just call market->start() from every thread in a pool and
+To make parallel, just call async_server->start() from every thread in a pool and
 add mutual exclusion to avoid data races.

@@ -11,7 +11,7 @@
 #include "../misc/misc.h"
 
 namespace trading {
-    
+
     class market {
 
         using order = trading::order;
@@ -80,6 +80,5 @@ namespace trading {
         std::map<id_type, order> _orders;
         std::map<std::string, std::vector<order>> _commodities;
         id_type _next_id;
-        std::mutex _market_mutex;
     };
 }
