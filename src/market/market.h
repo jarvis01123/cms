@@ -11,18 +11,16 @@
 #include "../misc/misc.h"
 
 namespace trading {
-
-
+    
     class market {
 
         using order = trading::order;
         using side = trading::side;
         using id_type = trading::id_type;
         using money_type = trading::money_type;
-        
+
         // function pointer declaration for handlers
         typedef std::string (market::*handler)(std::vector<std::string>);
-
 
     public:
             market();
@@ -39,12 +37,12 @@ namespace trading {
         std::string list_for_commodity(std::string commodity);
         std::string aggress(std::vector<std::string> command);
         std::string revoke(std::vector<std::string> command);
+        std::string check(std::vector<std::string> command);
 
         // write operations
         void close_order(id_type order_id);
         int adjust_amount(id_type order_id, int amount);
         void add_order(trading::order);
-        std::string check(std::vector<std::string> command);
         void fill_order(id_type);
         void revoke_order(id_type);
 
@@ -84,5 +82,4 @@ namespace trading {
         id_type _next_id;
         std::mutex _market_mutex;
     };
-
 }

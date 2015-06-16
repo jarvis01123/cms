@@ -9,11 +9,11 @@ using id_type = trading::id_type;
 
 trading::market::market(): _next_id{0} {
     // register handlers
-    _handlers.emplace( std::make_pair("POST", &trading::market::post) );
-    _handlers.emplace( std::make_pair("LIST", &trading::market::list) );
-    _handlers.emplace( std::make_pair("CHECK", &trading::market::check) );
-    _handlers.emplace( std::make_pair("AGGRESS", &trading::market::aggress) );
-    _handlers.emplace( std::make_pair("REVOKE", &trading::market::revoke) );
+    _handlers.emplace(std::make_pair("POST", &trading::market::post));
+    _handlers.emplace(std::make_pair("LIST", &trading::market::list));
+    _handlers.emplace(std::make_pair("CHECK", &trading::market::check));
+    _handlers.emplace(std::make_pair("AGGRESS", &trading::market::aggress));
+    _handlers.emplace(std::make_pair("REVOKE", &trading::market::revoke));
 }
 
 std::string trading::market::execute(std::string message) {
@@ -44,8 +44,6 @@ id_type trading::market::next_unique_id() {
     return ++_next_id;
 }
 
-// ############### methods ######################
-
 trading::order trading::market::get_order(id_type order_id) {
     return _orders[order_id];
 }
@@ -65,7 +63,6 @@ std::pair<bool, id_type> trading::market::parse_id_type(std::string val) {
 
 std::pair<bool, money_type> trading::market::parse_money_type(std::string val) {
 
-    // returns 0 if not a money_type. this is fine to test for, since 0 is a
     char* end;
     money_type tbr = strtod(val.c_str(), &end);
 
@@ -109,8 +106,6 @@ void trading::market::add_order(trading::order order) {
 
 // “LIST” COMMODITY [ DEALER_ID ]
 std::string trading::market::list(std::vector<std::string> command) {
-
-
 
     if (command.size() > LIST_NUM_ARGS) {
         std::string commodity = command[LIST_COMMODITY];
@@ -286,9 +281,6 @@ std::string trading::market::check(std::vector<std::string> command) {
 
     return order.info_str();
 }
-
-
-// ### helper methods ###
 
 bool trading::market::is_filled(id_type order_id) {
     return get_order(order_id).status == trading::order_status::FILLED;

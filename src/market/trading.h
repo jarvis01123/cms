@@ -40,7 +40,6 @@ namespace trading {
 
     };
 
-
     const std::string UNKOWN_COMMODITY = "UNKNOWN_COMMODITY";
 
     const std::vector<std::string> DEALER_IDS {
@@ -93,5 +92,4 @@ namespace trading {
         const int LIST_COMM_NUM_ARGS = 3;
         const int LIST_NUM_ARGS = 2;
     };
-
 };

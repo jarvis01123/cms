@@ -9,7 +9,7 @@ Extensions: Both extensions were implemented.
 
 Build Instructions:
 
-A call to make from this directory will place the executable cms in this directory
+A call to make from this directory will place the executable cms in ./bin/
 The program can be invoked with one of 3 modes:
 
 1. ./cms base
@@ -18,7 +18,7 @@ The program can be invoked with one of 3 modes:
 
 Modes 2 and 3 require client interaction, and there is no stdout. A simple
 client is provided for testing. Note that the output from the market will be
-returned to the client, NOT posted on the server side. Ideally this should be
+returned to the client, not posted on the server side. Ideally this should be
 logged on the server side, but is not as of yet.
 
 ------------ Design overview: ----------------------------
